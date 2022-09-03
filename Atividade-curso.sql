@@ -18,6 +18,10 @@ INSERT INTO estado (nome,sigla) VALUES ('SÃO PAULO','SP');
 INSERT INTO estado (nome,sigla) VALUES ('MATO GROSSO','MT');
 INSERT INTO estado (nome,sigla) VALUES ('SANTA CATARINA','SC');
 INSERT INTO estado (nome,sigla) VALUES ('RIO GRANDE DO SUL','RS');
+INSERT INTO estado (id,nome,sigla) VALUES (DEFAULT,'ACRE','AC');
+INSERT INTO estado (id,nome,sigla) VALUES (DEFAULT,'ALAGOAS','AL');
+INSERT INTO estado (id,nome,sigla) VALUES (DEFAULT,'CEARA','CE');
+
 SELECT * FROM estado;
 
 DROP TABLE IF EXISTS cidade;
