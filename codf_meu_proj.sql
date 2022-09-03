@@ -4,29 +4,47 @@ CREATE DATABASE banco_dados;
 
 USE banco_dados;
 
--- DROP TABLE IF EXISTS  estacionamnto;
+DROP TABLE IF EXISTS  cidade;
 
--- CREATE TABLE estacionamento(
--- id INT NOT NULL PRIMARY KEY AUTO_INCREMENT
--- ,cnpj VARCHAR(255) NOT NULL UNIQUE
--- ,quantidade_de_vagas VARCHAR(255) NOT NULL
--- ,quantidade_de_funcionarios VARCHAR(255) NOT NULL
--- );
+CREATE TABLE cidade(
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR(255) NOT NULL UNIQUE
+,CONSTRAINT pk_cidade PRIMARY KEY (id)
+);
 
--- INSERT INTO estacionamento(cnpj,quantidade_de_vagas,quantidade_de_funcionarios) VALUES ('1234','20','2');
--- SELECT cnpj,quantidade_de_vagas,quantidade_de_funcionarios FROM estacionamento;
+INSERT INTO cidade(nome) VALUES ("paranavaí");
+SELECT * FROM cidade;
+
+DROP TABLE IF EXISTS  estacionamento;
+
+CREATE TABLE estacionamento(
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR (255) NOT NULL
+,cnpj VARCHAR(255) NOT NULL UNIQUE
+,quantidade_de_vagas VARCHAR(255) NOT NULL
+,ativo CHAR (1) NOT NULL DEFAULT 'S'
+,quantidade_de_funcionarios VARCHAR(255) NOT NULL
+,cidade_id INT NOT NULL
+,CONSTRAINT pk_estacionamneto PRIMARY KEY (id)
+,CONSTRAINT fk_cidade_estacionamento FOREIGN KEY (cidade_id) REFERENCES cidade (id)
+,CONSTRAINT coluna_ativo_deve_ser_S_ou_N CHECK (ativo IN ('S','N'))
+,CONSTRAINT cidade_estacionamento UNIQUE (nome, cidade_id) 
+);
+
+INSERT INTO estacionamento(nome,cnpj,quantidade_de_vagas,quantidade_de_funcionarios,cidade_id) VALUES ('paranavaí','1234','20','2','1');
+SELECT * FROM estacionamento;
 
 -- DROP TABLE IF EXISTS  veiculo;
 
 -- CREATE TABLE veiculo(
 -- id INT NOT NULL PRIMARY KEY AUTO_INCREMENT
 -- ,cor VARCHAR(255) NOT NULL UNIQUE
--- ,ano VARCHAR(255) NOT NULL
+-- ,ano CHAR(4) NOT NULL
 -- ,placa VARCHAR(255) NOT NULL
 -- );
 
 -- INSERT INTO veiculo(cor,ano,placa) VALUES ('azul','2003','abc-1234');
--- SELECT id,cor,ano,placa FROM veiculo;
+-- SELECT * FROM veiculo;
 
 -- DROP TABLE IF EXISTS  pagamento;
 
@@ -39,4 +57,4 @@ USE banco_dados;
 -- );
 
 -- INSERT INTO pagamento(meio_de_pagamento,valor,desconto) VALUES ('dinheiro','120,00','8%');
--- SELECT id,data_,meio_de_pagamento,valor,desconto FROM pagamento;
+-- SELECT * FROM pagamento;
