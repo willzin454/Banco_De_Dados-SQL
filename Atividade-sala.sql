@@ -149,4 +149,4 @@
 -- );
 
 -- INSERT INTO pagamento(meio_de_pagamento,valor,desconto) VALUES ('dinheiro','120,00','8%');
--- SELECT * FROM pagamento;
+-- SELECT * FROM pagamento; 
