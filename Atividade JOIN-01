@@ -1,84 +1,118 @@
 -- NOME = William Gaber de Carvalho
 
--- 1.  Escreva o comando que liste os nomes de todas as cidades e as respectivas siglas do estado.
+1. Escreva o comando que liste as cidades como todas e os nomes de siglas do estado.
 
-SELECT
+SELECIONAR
 	cidade.nome, estado.sigla
-FROM estado, cidade
+DO estado, cidade
 
-WHERE estado.id = cidade.estado_id;
+ONDE estado.id = cidade.estado_id;
 
--- 2.	Escreva o comando que liste os nomes das cidades ativas e as respectivas siglas do estado. 
+2. Escreva o comando que liste as cidades das ativas e os nomes conhecidos -- as siglas do estado.
 
 SELECT cidade.nome, estado.sigla
-FROM estado, cidade
-WHERE estado.id = cidade.estado_id
+DO estado, cidade
+ONDE estado.id = cidade.estado_id
 AND cidade.ativo = 'S';
 
--- 3.	Escreva o comando que liste os nomes dos cliente e os nomes das respectivas cidades. 
+3. Escreva o comando que liste dos clientes e os nomes das cidades -- nomes.
 
 SELECT cliente.nome, cidade.nome
 
-FROM cliente, cidade
+DE cliente, cidade
 
-WHERE cliente.id = cliente.cidade_id; 
+WHERE cliente.id = cliente.cidade_id;
 
--- 4.	Escreva o comando que liste os nomes dos cliente e os nomes das respectivas cidades. Liste somente os clientes que moram na cidade de Paranavaí.
+4. Escreva o comando que liste dos clientes e os nomes das cidades -- nomes. Liste somente os clientes que moram na cidade de Paranavaí.
 
 SELECT cliente.nome, cidade.nome
 
-FROM cliente, cidade
+DE cliente, cidade
 
-WHERE cliente.id = cliente.cidade_id
+ONDE cliente.id = cliente.cidade_id
 	AND cidade.nome = 'PARANAVAÍ'
-    
--- 5.	Escreva o comando que liste os nomes das cidades e as respectivas siglas do estado. Liste somente as cidades ativas.
+
+-- 5. Escreva o comando que lista os nomes das cidades e as siglas do estado. Liste apenas como cidades ativas.
 
 SELECT cidade.nome, estado.sigla
-FROM estado, cidade
-WHERE estado.id = cidade.estado_id
+DO estado, cidade
+ONDE estado.id = cidade.estado_id
 AND cidade.ativo = 'S';
 
--- 6.	Escreva o comando que liste os nomes dos funcionários e os nomes das respectivas cidades.
+6. Escreva o comando que liste dos funcionários e os nomes dos nomes das cidades --.
 
 SELECT funcionario.nome, cidade.nome
 
-FROM funcionario, cidade
+DE funcionario, cidade
 
-WHERE 	cidade.id = funcionario.cidade_id; 
+WHERE cidade.id = funcionario.cidade_id;
 
--- 7.	Escreva o comando que liste os nomes dos funcionários e a sigla do respectivo estado. 
+-- 7. Escreva o comando que liste os nomes dos funcionários e a sigla do respeito estado.
 
 SELECT funcionario.nome, estado.sigla
 
-FROM funcionario, estado, cidade
+DE funcionario, estado, cidade
 
-WHERE estado.id = cidade.estado_id
+ONDE estado.id = cidade.estado_id
 	AND cidade.id = funcionario.cidade_id;
-    
--- 8.	Escreva o comando que liste os nomes dos cliente e os nomes das respectivas cidades. Liste somente os clientes que moram na região sul.
+
+8. Escreva o comando que liste dos clientes e os nomes dos nomes das cidades --. Liste somente os clientes que moram na região sul.
 
 SELECT cliente.nome, cidade.nome
 
-FROM cliente, cidade, estado
+DE cliente, cidade, estado
 
-WHERE estado.id = cidade.estado_id
-	AND cidade.id = cliente.cidade_id
+ONDE estado.id = cidade.estado_id
+	E cidade.id = cliente.cidade_id
 	AND (estado.sigla = 'PR' OR estado.sigla = 'SC' OR estado.sigla = 'RS')
-    
--- 9.	Escreva o comando que liste os nomes dos estados com cadastros ativos que possuem algum cliente cadastrado.
+
+-- 9. Escreva o comando que liste os nomes dos estados com cadastros ativos que possuem algum cliente cadastrado.
 
 SELECT estado.nome, estado.ativo, cliente.id
 
-FROM estado, cliente, cidade	
+DO estado, cliente, cidade	
 
 WHERE estado.ativo = 'S'
-	AND cliente.id = cidade.estado_id; 
-    
--- 10.	Escreva o comando que liste todas as vendas e o nome do respectivo funcionário que a realizou.
+	AND cliente.id = cidade.estado_id;
+
+-- 10. Escreva o comando que liste todas as vendas e o nome do funcionário que realizou as vendas realizadas.
 
 SELECT venda.id, funcionario.nome, funcionario.id
 
-FROM venda, funcionario
+DE venda, funcionario
 
-WHERE funcionario.id = venda.funcionario_id
+ONDE funcionario.id = venda.funcionario_id;
+
+-- 11.	Liste o nome dos produtos, o preço de venda e o nome da unidade de medida.
+
+SELECT produto.nome, item_venda.preco_unidade, unidade_medida.nome
+
+FROM produto, item_venda, unidade_medida, venda
+
+WHERE unidade_medida.id = produto.unidade_medida_id
+	AND venda.id = item_venda.venda_id;
+    
+-- 12.	Liste o nome dos produtos da marca "Coca-cola".
+
+SELECT produto.nome, marca.nome
+
+FROM produto, nome
+
+WHERE marca.id = produto.marca_id
+
+
+
+-- 1.	Em que caso devemos utilizar o JOIN? Quais tabelas podem ser utilizando em um comando JOIN? 
+-- R: em casos que é necessario fazer a relação entre duas tabelas, so podem ser feitas relações em JOIN entre tabelas que ja tem um relação entre PK e FK.
+
+-- 2.	No caso do JOIN, o que é condição de junção. Qual cuidado devemos ter.
+-- R: a condução de junção seria os criterios necessarios pelos quais tem que existir para fazer uma junção. Tem que ter cuidado com junções em tabelas que não foram executadas de maneira correta.->
+
+-- 3.	Em relação a sintaxe, em um JOIN não é necessário utilizarmos condições (WHERE) - o comando irá executar normalmente. Porém, em questão de semântica, a cada junção é necessário ter ao menos 1 condição. Explique.
+-- R: a condição justifica a utilidade do JOIN, sendo ela necessaria para estipular um limite de filtro.->
+
+-- 4.	O que é produto cartesiano? Como funciona? Qual a relação com o JOIN.
+-- R: JOIN retorna todas as linhas das tabelas por cruzamento, assim, para cada linha da tabela esquerda queremos todos os linhas da tabelas direita ou vice-versa. Assim o plano cartesiano faz seu refencia nas tabelas. 
+
+-- 5.	Na elaboração de um consulta que envolve 1587 tabelas, serão necessários, quantas condições de junção?
+-- R: 1586
