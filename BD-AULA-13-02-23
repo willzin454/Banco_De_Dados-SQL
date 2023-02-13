@@ -1,0 +1,49 @@
+DROP DATABASE IF EXISTS sala;
+
+CREATE DATABASE sala;
+
+USE sala;
+
+DROP TABLE IF EXISTS estado;
+
+CREATE TABLE estado(
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR(255) NOT NULL
+,sigla CHAR(55)
+,CONSTRAINT pk_estado PRIMARY KEY (id)
+);
+
+DROP TABLE IF EXISTS cidade;
+
+CREATE TABLE cidade(
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR(255) NOT NULL UNIQUE
+,estado_id INT NOT NULL
+,CONSTRAINT pk_cidade PRIMARY KEY (id)
+,CONSTRAINT fk_estado_cidade FOREIGN KEY(estado_id) REFERENCES estado (id)
+,CONSTRAINT estado_cidade UNIQUE (nome, estado_id)
+);
+
+DROP TABLE IF EXISTS aluno;
+
+CREATE TABLE aluno(
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR(255) NOT NULL
+,dtnacimento CHAR(55)
+,idade CHAR(55)
+,cidade_id INT NOT NULL
+,CONSTRAINT pk_aluno PRIMARY KEY (id)
+,CONSTRAINT fk_aluno_cidade FOREIGN KEY(cidade_id) REFERENCES cidade (id)
+,CONSTRAINT aluno_cidade UNIQUE (nome, cidade_id)
+);
+
+DROP TABLE IF EXISTS disciplina;
+
+CREATE TABLE disciplina(
+id INT NOT NULL AUTO_INCREMENT
+,nome VARCHAR(255) NOT NULL
+,aluno_id INT NOT NULL
+,CONSTRAINT pk_disciplina PRIMARY KEY (id)
+,CONSTRAINT fk_disciolina_aluno FOREIGN KEY(aluno_id) REFERENCES aluno (id)
+,CONSTRAINT disciplina_aluno UNIQUE(nome, aluno_id)
+);
