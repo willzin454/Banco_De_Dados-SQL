@@ -181,7 +181,7 @@ preço > 10 = "caro"
 SELECT nome_produto AS Produto, valor AS Preço,
 	CASE
 		WHEN (valor <= 5.00) THEN 'barato'
-		WHEN (valor > 5 AND valor < 10) THEN 'normal'
-		WHEN (valor >= 10) THEN 'caro'
+		WHEN (valor > 5 AND valor <= 10) THEN 'normal'
+		WHEN (valor > 10) THEN 'caro'
 	END AS Classificação
 FROM produtos;
