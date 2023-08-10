@@ -62,17 +62,23 @@ end $$;
 INSERT INTO vendas (quantidade_produtos, valor_total, produto_id)
 VALUES (2, 50, 1);
 
-do $$
-declare
+DO $$
+DECLARE
+	produto int := 1;
 	quantidade int := 2;
 	valor decimal;
 	valor_total decimal;
+BEGIN
+	valor := (SELECT produtos.valor 
+			  from produtos 
+			  where produtos.id_produto = produto);
+	valor_total := quantidade * valor;
 	
-begin
-	valor := (SELECT valor FROM produtos WHERE (id_produto = 1)
-	valor_total := quantidade * valor	
+	INSERT INTO vendas 
+		(quantidade_produtos, valor_total, produto_id)
+	values  (quantidade, valor_total, produto);
 
-	INSERT INTO vendas (quantidade_produto, valor_total, produto)
-	VALUES (quatidade, vaor_total, produto)
+END $$;
 
-end $$;
+SELECT * FROM vendas;
+TRUNCATE vendas RESTART IDENTITY;
