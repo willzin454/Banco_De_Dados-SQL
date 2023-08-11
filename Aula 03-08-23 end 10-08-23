@@ -185,3 +185,28 @@ SELECT nome_produto AS Produto, valor AS Preço,
 		WHEN (valor > 10) THEN 'caro'
 	END AS Classificação
 FROM produtos;
+
+
+-- Atividade 15 da lista. (ainda não ta terminada)
+
+DO $$
+DECLARE
+	salario_b FLOAT;
+	salario_final FLOAT;
+	id_vend INT := 1;
+	data_dif VARCHAR(255);
+	data_inicio VARCHAR(255) := '2010-06-13';
+BEGIN
+	salario_b := (SELECT salario_base FROM vendedores WHERE id_vendedores = id_vend);
+	data_dif := (SELECT AGE(data_contratacao, data_inicio);
+	CASE
+		WHEN (data_dif >= 1) THEN
+				salario_b = salario_b * 0.2;
+		WHEN (data_dif > 2 AND data_dif < 5) THEN
+				salario_b = salario_b * 0.5;
+		WHEN (data_dif >= 5) THEN
+				salario_b = salario_b * 0.10;
+				 
+		INSERT INTO
+END $$;
+
