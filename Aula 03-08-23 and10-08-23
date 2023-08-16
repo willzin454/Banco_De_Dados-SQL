@@ -11,6 +11,16 @@ CREATE TABLE vendas (
 	produto_id int not null references produtos(id_produto)
 );
 
+CREATE TABLE vendedores (
+	id_vendedores serial NOT NULL PRIMARY KEY,
+	nome VARCHAR(255) NULL,
+  	cpf VARCHAR(255) NULL,
+  	data_contratacao VARCHAR(255) NULL,
+  	salario_base FLOAT NULL
+  	comissao INT NOT NULL,
+  	salario_final FLOAT NOT NULL
+);
+
 INSERT INTO produtos (nome_produto, valor)
 VALUES ('caderno', 25.00),
 	('lapis', 1.00),
@@ -191,22 +201,29 @@ FROM produtos;
 
 DO $$
 DECLARE
-	salario_b FLOAT;
-	salario_final FLOAT;
-	id_vend INT := 1;
+	salario_f FLOAT;
 	data_dif VARCHAR(255);
-	data_inicio VARCHAR(255) := '2010-06-13';
+    	data_contra VARCHAR(255);
+    	comissao INT;
+    	id_vend INT := 1;
 BEGIN
-	salario_b := (SELECT salario_base FROM vendedores WHERE id_vendedores = id_vend);
-	data_dif := (SELECT AGE(data_contratacao, data_inicio);
+	
+    	SELECT (data_contratacao, salario_base INTO data_contra, salario_f FROM vendedores WHERE id_vendedores = id_vend);
+	data_dif := SELECT EXTRACT(YEAR FROM age(CURRENT_DATE, data_contra));
+    
 	CASE
 		WHEN (data_dif >= 1) THEN
-				salario_b = salario_b * 0.2;
-		WHEN (data_dif > 2 AND data_dif < 5) THEN
-				salario_b = salario_b * 0.5;
-		WHEN (data_dif >= 5) THEN
-				salario_b = salario_b * 0.10;
+				salario_f = salario_f * 0.2;
+                 comissao := 2;
+		WHEN (data_dif >= 2 AND data_dif <= 5) THEN
+				salario_f = salario_f * 0.5;
+                 comissao := 5;
+		WHEN (data_dif > 5) THEN
+				salario_f = salario_f * 0.10;
+                 comissao := 10;
+        END CASE;
 				 
-		INSERT INTO
+		INSERT INTO vendedores(id_vendedores, nome, cpf, data_contratacao, salario_base, comissao, salario_final);
+        	VALUES (id_vend, NULL, NULL, NULL, NULL, comissao, salario_f);
 END $$;
 
