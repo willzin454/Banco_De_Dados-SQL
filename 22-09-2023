@@ -1,0 +1,91 @@
+/*
+Função definidas pelo usuario e procedientos armazenados
+
+- Função tem retorno
+- Procedimento não tem retorno
+
+-- FUNÇAO
+
+Sintaxe:
+
+CREATE [OR REPLACE] FUNCTION nome_função(parametro1 tipo, parametro2 tipo)
+RETURN tipo AS $$ 
+DECLARE
+	-- Declaração de variáveis
+BEGIN
+	-- Ações
+END;
+$$ LANGUAGE linguagem que vai ser usada.
+*/
+
+-- Criar uma função que soma os numeros em um intervalo.
+
+CREATE OR REPLACE FUNCTION somarNumeros(num1 int, num2 int)
+RETURNS int AS $$
+DECLARE
+	soma int:= 0;
+BEGIN
+	FOR i IN num1..num2 LOOP
+		soma := soma + i;
+	END LOOP;
+	
+	RETURN soma;
+END;
+$$ LANGUAGE PLPGSQL;
+
+SELECT somarNumeros(1, 5);
+
+-- retornar tabela
+
+CREATE TABLE pessoas(
+	id_pessoas SERIAL NOT NULL PRIMARY KEY,
+	nome_pessoa VARCHAR(50) NOT NULL,
+	idade_pessoa INT NOT NULL
+);
+
+INSERT INTO pessoas(nome_pessoa, idade_pessoa)
+VALUES	('William', 55),
+		('Fodase', 20),
+		('Fodase2', 10);
+		
+CREATE OR REPLACE FUNCTION listarPessoasIdade(idade int)
+RETURNS TABLE(nome VARCHAR, idade_pes INT) AS $$
+BEGIN
+	RETURN QUERY SELECT nome_pessoa, idade_pessoa
+	FROM pessoas
+	WHERE idade_pessoa > idade;	
+END;
+$$	LANGUAGE PLPGSQL;
+
+SELECT nome, idade_pes
+FROM listarPessoasIdade(10);
+
+-- Procedimentos armazenados (STORED PROCEDURES ou PROCEDURES)
+/*
+Sintaxe:
+
+CREATE [OR REPLACE] PROCEDURE nomeProcedimento (parametro tipo) AS $$
+DECLARE
+	-- declaração das variaveis
+BEGIN
+	-- ações
+END;
+$$ LANGUAGE linguagem
+
+CALL (para chamar o procedimento)
+*/
+
+-- Criar um rocedimento que realze a soma de um intervalo de numeros
+
+CREATE OR REPLACE PROCEDURE somarNumerosPro(num1 int, num2 int) AS $$
+DECLARE
+	soma int := 0;
+BEGIN
+	FOR i IN num1..num2 LOOP
+		soma := soma + i;
+	END LOOP;	
+	RAISE NOTICE 'O resultado da soma é: %', soma;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CALL somarNumerosPro(1, 5);
