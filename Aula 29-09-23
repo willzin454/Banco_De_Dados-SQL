@@ -77,6 +77,13 @@ CREATE TABLE estoque(
 	status VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE estoque(
+	id_produto SERIAL NOT NULL PRIMARY KEY,
+	quantidade NUMERIC NOT NULL,
+	alerta_estoque NUMERIC NOT NULL,
+	status VARCHAR(255) NOT NULL
+);
+
 CREATE OR REPLACE FUNCTION atualizarStatus()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -94,7 +101,7 @@ $$ LANGUAGE PLPGSQL;
 CREATE TRIGGER novoStatus
 BEFORE INSERT OR UPDATE
 ON estoque
-FOR EACH STATEMENT
+FOR EACH ROW
 EXECUTE PROCEDURE atualizarStatus();
 
 INSERT INTO estoque(quantidade, alerta_estoque)
@@ -106,4 +113,4 @@ DROP TRIGGER novoStatus ON estoque;
 TRUNCATE TABLE estoque RESTART IDENTITY;
 DROP TABLE estoque;
 
-SELECT * FROM funcionarios;
+SELECT * FROM estoque;
