@@ -1,0 +1,65 @@
+-- TRIGGES
+-- Trigger function
+/*
+CREATE OR REPLACE FUNCTION nome_funcao()
+RETURNS TRIGGER AS $$
+BEGIN
+	--ações
+RETURN NEW; (ou OLD)
+END;
+$$ LANGUAGE PLPGSQL;
+*/
+
+-- Trigger -> vincular a função á tabela
+/*
+CREATE TRIGGER nome_trigger
+BEFORE | AFTER evento
+ON tabela
+FOR EACH ROW | STATEMENT
+EXECUTE PROCEDURE nome_funcao();
+*/
+
+-- Definir um bonus aos funcionarios de acordo com o salario. 1500 - 3000: bonus de 0.2; 3001 - 5000: bonus de 0.25; acima de 5000: bonus de 0.3
+
+CREATE TABLE funcionarios(
+	id_funcionarios SERIAL NOT NULL PRIMARY KEY,
+	nome VARCHAR(255) NOT NULL,
+	salario NUMERIC NOT NULL,
+	bonus NUMERIC NOT NULL
+);
+
+CREATE OR REPLACE FUNCTION atualizarBonus()
+RETURNS TRIGGER AS $$
+BEGIN
+	IF (NEW.salario >= 1500 AND NEW.salario <= 3000) THEN
+		NEW.bonus := 0.2;
+
+	ELSIF (NEW.salario >= 3001 AND NEW.salario <= 5000) THEN
+		NEW.bonus := 0.25;
+		
+	ELSIF (NEW.salario > 5000) THEN
+		NEW.bonus := 0.3;
+		
+	ELSE 
+		NEW.bonus := 0;
+		
+	END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER dispararBonus
+BEFORE INSERT OR UPDATE
+ON funcionarios
+FOR EACH ROW
+EXECUTE PROCEDURE atualizarBonus();
+
+INSERT INTO funcionarios(nome, salario)
+VALUES 	('William', 300),
+		('Sal', 6000),
+		('OIUY', 2000);
+
+DROP TRIGGER dispararBonus ON funcionarios; -- sempre desvincular antes de dropar
+TRUNCATE TABLE funcionarios RESTART IDENTITY;
+
+SELECT * FROM funcionarios;
