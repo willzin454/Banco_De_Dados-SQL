@@ -63,3 +63,47 @@ DROP TRIGGER dispararBonus ON funcionarios; -- sempre desvincular antes de dropa
 TRUNCATE TABLE funcionarios RESTART IDENTITY;
 
 SELECT * FROM funcionarios;
+
+-- EX1: /*
+Crie uma tabela chamada "estoque" com as colunas "id_produto", "quantidade", "alerta_estoque" e “status”. 
+Em seguida, crie um gatilho que verifique se a quantidade em estoque está abaixo do valor de alerta e, se estiver, 
+atualize a coluna "status" para 'Baixo' automaticamente.
+*/
+
+CREATE TABLE estoque(
+	id_produto SERIAL NOT NULL PRIMARY KEY,
+	quantidade NUMERIC NOT NULL,
+	alerta_estoque NUMERIC NOT NULL,
+	status VARCHAR(255) NOT NULL
+);
+
+CREATE OR REPLACE FUNCTION atualizarStatus()
+RETURNS TRIGGER AS $$
+BEGIN
+	IF(NEW.quantidade < NEW.alerta_estoque) THEN
+		NEW.status := 'Baixo';
+		
+	ELSE
+		NEW.status := 'Alto';
+		
+	END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER novoStatus
+BEFORE INSERT OR UPDATE
+ON estoque
+FOR EACH STATEMENT
+EXECUTE PROCEDURE atualizarStatus();
+
+INSERT INTO estoque(quantidade, alerta_estoque)
+VALUES	(80, 20),
+		(10, 20),
+		(100, 10);
+
+DROP TRIGGER novoStatus ON estoque; 
+TRUNCATE TABLE estoque RESTART IDENTITY;
+DROP TABLE estoque;
+
+SELECT * FROM funcionarios;
