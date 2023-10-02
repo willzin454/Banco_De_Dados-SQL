@@ -107,3 +107,34 @@ TRUNCATE TABLE estoque RESTART IDENTITY;
 DROP TABLE estoque;
 
 SELECT * FROM estoque;
+
+/*
+Crie uma tabela chamada "alunos" com as colunas "id_aluno", "nome" e "status". Em seguida,
+crie um gatilho que atualize automaticamente o status para 'Ativo' quando um novo aluno for inserido.
+*/
+
+CREATE TABLE alunos(
+	id_alunos SERIAL PRIMARY KEY,
+  	nome VARCHAR(255) NOT NULL,
+  	status VARCHAR(255) DEFAULT 'Ativo'
+);
+
+CREATE OR REPLACE FUNCTION atualizacaoStatus()
+RETURNS TRIGGER AS $$
+BEGIN
+	NEW.status := 'Ativo';
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER novoStatus
+BEFORE INSERT OR UPDATE
+ON alunos
+FOR EACH ROW
+EXECUTE PROCEDURE atualizacaoStatus();
+
+INSERT INTO alunos(nome)
+VALUES 	('João'),
+		('Maria');
+        
+SELECT * FROM alunos;
