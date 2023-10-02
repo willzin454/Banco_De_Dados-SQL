@@ -77,13 +77,6 @@ CREATE TABLE estoque(
 	status VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE estoque(
-	id_produto SERIAL NOT NULL PRIMARY KEY,
-	quantidade NUMERIC NOT NULL,
-	alerta_estoque NUMERIC NOT NULL,
-	status VARCHAR(255) NOT NULL
-);
-
 CREATE OR REPLACE FUNCTION atualizarStatus()
 RETURNS TRIGGER AS $$
 BEGIN
