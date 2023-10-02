@@ -138,3 +138,40 @@ VALUES 	('João'),
 		('Maria');
         
 SELECT * FROM alunos;
+
+/*
+Crie uma tabela chamada "notas" com as colunas "id_aluno", "valor" e "status". Crie 
+um gatilho que atualize automaticamente o status para 'Aprovado' se o valor 
+da nota for maior ou igual a 6 e 'Reprovado' se for menor.
+*/
+
+CREATE TABLE notas(
+	id_notas SERIAL PRIMARY KEY,
+  	valor INT NOT NULL,
+  	status VARCHAR(255) NOT NULL
+);
+
+CREATE OR REPLACE FUNCTION aprovarAluno()
+RETURNS TRIGGER AS $$
+BEGIN
+	IF (NEW.valor >= 6) THEN
+    	NEW.status := 'Aprovado';
+    ELSE
+    	NEW.status := 'Reprovado';
+    END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER analisar
+BEFORE INSERT OR UPDATE
+ON notas
+FOR EACH ROW
+EXECUTE PROCEDURE aprovarAluno();
+
+INSERT INTO notas(valor)
+VALUES	(10),
+		(5),
+        (7);
+        
+SELECT * FROM notas;
