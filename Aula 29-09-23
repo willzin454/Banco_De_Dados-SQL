@@ -175,3 +175,69 @@ VALUES	(10),
         (7);
         
 SELECT * FROM notas;
+
+/*
+Suponha que você tenha duas tabelas: "contas" com as colunas "id_conta", "saldo" e "cliente_id",e "transacoes" com as colunas 
+"id_transacao", "conta_id", "tipo" e "valor". Crie um gatilho que atualize automaticamente o saldo da conta 
+após a inserção de uma nova transação,adicionando o valor da transação se o tipo for 
+'Depósito' e subtraindo-o se o tipo for 'Retirada'.
+*/
+
+CREATE TABLE cliente(
+	id_cliente SERIAL NOT NULL PRIMARY KEY,
+  	nome VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE contas(
+	id_contas SERIAL NOT NULL PRIMARY KEY,
+  	saldo FLOAT NOT NULL,
+  	cliente_id INT NOT NULL REFERENCES cliente(id_cliente)
+);
+
+CREATE TABLE transacoes(
+	id_transacoes SERIAL NOT NULL PRIMARY KEY,
+  	tipo VARCHAR(55) NOT NULL,
+  	valor FLOAT NOT NULL,
+  	conta_id INT NOT NULL REFERENCES contas(id_contas)
+);
+
+CREATE OR REPLACE FUNCTION atualizarSaldo()
+RETURNS TRIGGER AS $$
+BEGIN
+	IF(NEW.transacoes.tipo LIKE 'deposito') THEN
+    	NEW.contas.saldo := NEW.contas.saldo + NEW.transacoes.valor;
+    ELSIF(NEW.transacoes.tipo LIKE 'retirada') THEN
+    	NEW.contas.saldo := NEW.contas.saldo - NEW.transacoes.valor;
+    ELSE
+    	RAISE NOTICE 'Operação Invalida!';
+    END IF;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER novoSaldo
+BEFORE INSERT OR UPDATE
+ON transacoes
+FOR EACH ROW
+EXECUTE PROCEDURE atualizarSaldo()
+
+INSERT INTO cliente(nome)
+VALUES 	('William'),
+		('William2'),
+        ('William3');
+        
+INSERT INTO contas(saldo, cliente_id)
+VALUES 	(1300.00, 3),
+		(2500.00, 1),
+        (5000.00, 2);
+        
+DO $$
+DECLARE
+	operacao VARCHAR(255):= 'deposito';
+    vlr FLOAT:= 100.00;
+    conta INT := 3;
+BEGIN
+
+    INSERT INTO transacoes(tipo, valor, conta_id)
+    VALUES 	(operacao, vlr, conta);
+    
+END $$;
