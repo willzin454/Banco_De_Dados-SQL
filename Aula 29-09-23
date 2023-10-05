@@ -247,3 +247,52 @@ END $$;
 
 SELECT * FROM transacoes;
 SELECT * FROM contas;
+-----------------------------------------------------------------------------------------------------------------------------
+-- EX5: /*
+Considere duas tabelas: "clientes" com as colunas "id_cliente" e "pontos", e "compras" com as colunas "id_compra", 
+"cliente_id" e "valor".Crie um gatilho que atualize automaticamente os pontos do cliente após a inserção de uma nova compra, 
+adicionando 10 pontos para cada R$ 100 em compras.
+*/
+drop table compras;
+
+CREATE TABLE clientes(
+	id_clientes SERIAL NOT NULL PRIMARY KEY,
+  	pontos INT NOT NULL,
+  	compras FLOAT NOT NULL
+);
+
+CREATE TABLE compras(
+	id_compras SERIAL NOT NULL PRIMARY KEY,
+  	valor FLOAT NOT NULL,
+  	cliente_id INT NOT NULL REFERENCES clientes(id_clientes)
+);
+
+CREATE OR REPLACE FUNCTION atualizarPontos()
+RETURNS TRIGGER AS $$
+BEGIN
+    	UPDATE clientes
+        SET compras = compras + New.valor, pontos = pontos + (NEW.compras / 100 * 10)
+        WHERE id_clientes = NEW.compras.cliente_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER attPontos
+AFTER INSERT OR UPDATE
+ON compras
+FOR EACH ROW
+EXECUTE FUNCTION atualizarPontos();
+
+INSERT INTO clientes(pontos, compras)
+VALUES 	(0, 0),
+		(0, 0),
+        (0, 0);
+        
+DO $$
+DECLARE
+	vlr FLOAT := 200.00;
+    cliente INT := 1;
+BEGIN
+	INSERT INTO compras(valor, cliente_id)
+    VALUES 	(vlr, cliente);
+END $$;
