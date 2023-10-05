@@ -204,21 +204,26 @@ CREATE TABLE transacoes(
 CREATE OR REPLACE FUNCTION atualizarSaldo()
 RETURNS TRIGGER AS $$
 BEGIN
-	IF(NEW.transacoes.tipo LIKE 'deposito') THEN
-    	NEW.contas.saldo := NEW.contas.saldo + NEW.transacoes.valor;
-    ELSIF(NEW.transacoes.tipo LIKE 'retirada') THEN
-    	NEW.contas.saldo := NEW.contas.saldo - NEW.transacoes.valor;
+	IF (NEW.tipo ILIKE 'deposito') THEN
+    	UPDATE contas
+        SET saldo = saldo + NEW.valor
+        WHERE id_contas = NEW.conta_id;
+    ELSIF (NEW.tipo ILIKE 'retirada') THEN
+    	UPDATE contas
+        SET saldo = saldo - NEW.valor
+        WHERE id_contas = NEW.conta_id;
     ELSE
-    	RAISE NOTICE 'Operação Invalida!';
+    	RAISE EXCEPTION 'Operação Inválida!';
     END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE TRIGGER novoSaldo
-BEFORE INSERT OR UPDATE
+AFTER INSERT OR UPDATE
 ON transacoes
 FOR EACH ROW
-EXECUTE PROCEDURE atualizarSaldo()
+EXECUTE FUNCTION atualizarSaldo();
 
 INSERT INTO cliente(nome)
 VALUES 	('William'),
@@ -232,12 +237,13 @@ VALUES 	(1300.00, 3),
         
 DO $$
 DECLARE
-	operacao VARCHAR(255):= 'deposito';
+	operacao VARCHAR(255):= 'retirada';
     vlr FLOAT:= 100.00;
-    conta INT := 3;
+    conta INT := 1;
 BEGIN
-
-    INSERT INTO transacoes(tipo, valor, conta_id)
+    INSERT INTO transacoes (tipo, valor, conta_id)
     VALUES 	(operacao, vlr, conta);
-    
 END $$;
+
+SELECT * FROM transacoes;
+SELECT * FROM contas;
