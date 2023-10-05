@@ -63,7 +63,7 @@ DROP TRIGGER dispararBonus ON funcionarios; -- sempre desvincular antes de dropa
 TRUNCATE TABLE funcionarios RESTART IDENTITY;
 
 SELECT * FROM funcionarios;
-
+-------------------------------------------------------------------------------------------------------------------------
 -- EX1: /*
 Crie uma tabela chamada "estoque" com as colunas "id_produto", "quantidade", "alerta_estoque" e “status”. 
 Em seguida, crie um gatilho que verifique se a quantidade em estoque está abaixo do valor de alerta e, se estiver, 
@@ -107,8 +107,8 @@ TRUNCATE TABLE estoque RESTART IDENTITY;
 DROP TABLE estoque;
 
 SELECT * FROM estoque;
-
-/*
+-------------------------------------------------------------------------------------------------------------------------
+-- EX2: /*
 Crie uma tabela chamada "alunos" com as colunas "id_aluno", "nome" e "status". Em seguida,
 crie um gatilho que atualize automaticamente o status para 'Ativo' quando um novo aluno for inserido.
 */
@@ -138,8 +138,8 @@ VALUES 	('João'),
 		('Maria');
         
 SELECT * FROM alunos;
-
-/*
+-------------------------------------------------------------------------------------------------------------------------
+-- EX3: /*
 Crie uma tabela chamada "notas" com as colunas "id_aluno", "valor" e "status". Crie 
 um gatilho que atualize automaticamente o status para 'Aprovado' se o valor 
 da nota for maior ou igual a 6 e 'Reprovado' se for menor.
@@ -175,8 +175,8 @@ VALUES	(10),
         (7);
         
 SELECT * FROM notas;
-
-/*
+-----------------------------------------------------------------------------------------------------------------------------
+-- EX4: /*
 Suponha que você tenha duas tabelas: "contas" com as colunas "id_conta", "saldo" e "cliente_id",e "transacoes" com as colunas 
 "id_transacao", "conta_id", "tipo" e "valor". Crie um gatilho que atualize automaticamente o saldo da conta 
 após a inserção de uma nova transação,adicionando o valor da transação se o tipo for 
@@ -213,7 +213,7 @@ BEGIN
         SET saldo = saldo - NEW.valor
         WHERE id_contas = NEW.conta_id;
     ELSE
-    	RAISE EXCEPTION 'Operação Inválida!';
+    	RAISE EXCEPTION 'Operação Inválida! Por favor insira "Deposito" ou "Retirada".';
     END IF;
     RETURN NEW;
 END;
@@ -237,12 +237,12 @@ VALUES 	(1300.00, 3),
         
 DO $$
 DECLARE
-	operacao VARCHAR(255):= 'retirada';
+	operacao VARCHAR(255):= 'retirad';
     vlr FLOAT:= 100.00;
     conta INT := 1;
 BEGIN
     INSERT INTO transacoes (tipo, valor, conta_id)
-    VALUES 	(operacao, vlr, conta);
+    VALUES 	(operacao, vlr, conta); 
 END $$;
 
 SELECT * FROM transacoes;
