@@ -298,7 +298,7 @@ BEGIN
     VALUES 	(vlr, cliente);
 END $$;
 
-						-- 	V. correta	--
+						-- 	V. quase correta	--
 
 CREATE TABLE clientes(
 	id_clientes SERIAL NOT NULL PRIMARY KEY,
@@ -337,6 +337,64 @@ VALUES 	(0, 0),
 DO $$
 DECLARE
 	vlr FLOAT := 50.00;
+    cliente INT := 1;
+BEGIN
+	INSERT INTO compras(valor, cliente_id)
+    VALUES 	(vlr, cliente);
+END $$;
+
+SELECT * FROM clientes;
+
+						-- 	V. correta	--
+
+CREATE TABLE clientes(
+	id_clientes SERIAL NOT NULL PRIMARY KEY,
+  	pontos INT NOT NULL,
+  	compra FLOAT NOT NULL
+);
+
+CREATE TABLE compras(
+	id_compras SERIAL NOT NULL PRIMARY KEY,
+  	valor FLOAT NOT NULL,
+  	cliente_id INT NOT NULL REFERENCES clientes(id_clientes)
+);
+
+CREATE OR REPLACE FUNCTION atualizarPontos()
+RETURNS TRIGGER AS $$
+DECLARE
+	compra_total INT;
+    pontos_total INT;
+    v INT := 0;
+BEGIN
+	WHILE(New.valor > v) LOOP
+	UPDATE clientes
+    SET pontos = pontos + 10
+    WHERE id_clientes = NEW.cliente_id;
+    v := v + 100;
+    END LOOP;
+    
+    UPDATE clientes
+    SET compra = compra + NEW.valor
+    WHERE id_clientes = NEW.cliente_id;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER attPontos
+AFTER INSERT OR UPDATE 
+ON compras
+FOR EACH ROW
+EXECUTE FUNCTION atualizarPontos();
+
+INSERT INTO clientes(pontos, compra)
+VALUES 	(0, 0),
+		(0, 0),
+        (0, 0);
+        
+DO $$
+DECLARE
+	vlr FLOAT := 300;
     cliente INT := 1;
 BEGIN
 	INSERT INTO compras(valor, cliente_id)
