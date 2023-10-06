@@ -1,0 +1,203 @@
+
+ /*
+REPETIÇÃO	
+
+LOOP		= if
+WHILE LOOP	= while
+FOR LOOP	= 
+*/
+
+-- LOOP
+-- Geralmente acompanhado de IF -> fornecer condiição de parada
+
+/*
+Sintaxe:
+
+LOOP
+	ações
+	IF (condição)
+		exit;
+	END IF;
+END LOOP
+*/
+
+-- Imprimir a tabuada de 3
+
+DO $$
+DECLARE
+	cont int := 0;
+	num int := 3;	
+BEGIN
+	LOOP
+		IF (cont > 10)	THEN
+			exit;
+		END IF;
+		
+		raise notice '% + % = %', num, cont, (num + cont);
+		cont := cont +1;
+		
+	END LOOP;
+END $$
+
+-- WHILE LOOP
+
+/*
+WHILE [condição] LOOP
+	ação
+END LOOP;
+*/
+
+DO $$
+DECLARE
+	num int := 3;
+	cont int := 0;
+BEGIN
+	WHILE (cont <= 10) LOOP
+	
+	raise notice '% x % = %', num, cont, (num * cont);
+	cont := cont +1;
+	
+	END LOOP;
+END $$
+
+-- FOR LOOP
+
+/*
+FOR [contado] in <REVERSE>  [COMEÇO]..[FINAL] <BY [PASSO]> LOOP
+	AÇÕES
+END LOOP
+*/
+
+-- Tabuada do 3;
+-- Tabuado do 3 decrescente (10 a 0);
+-- Tabuada do 3 de 2 em dois;
+
+DO $$
+DECLARE
+	num int := 3;
+	cont int;
+BEGIN
+	FOR cont IN 0..10 LOOP	
+	raise notice '% * % = %', num, cont, (num * cont);
+	END LOOP;
+END $$
+
+--
+
+DO $$
+DECLARE
+	num int := 3;
+	cont int;
+BEGIN
+	FOR cont IN REVERSE 10..0 LOOP	
+	raise notice '% * % = %', num, cont, (num * cont);
+	END LOOP;
+END $$
+
+--
+
+DO $$
+DECLARE
+	num int := 3;
+	cont int;
+BEGIN
+	FOR cont IN 0..10 BY 2 LOOP	
+	raise notice '% * % = %', num, cont, (num * cont);
+	END LOOP;
+END $$
+
+-- Elabore um laço de repetição para inserir números de 1 a 10 em uma tabela chamada “numeros”.
+
+CREATE TABLE numeros(
+	id_numeros SERIAL NOT NULL PRIMARY KEY
+	,num INT NOT NULL
+);
+
+DO $$
+DECLARE
+	num_tab int := 1;
+	num_id int := 1;
+BEGIN
+	LOOP
+		IF(num_id > 10) THEN
+			exit;
+		END IF;
+		
+		INSERT INTO numeros(id_numeros, num)
+		VALUES (num_id, num_tab);
+		num_id = num_id + 1;
+		num_tab = num_id;
+	END LOOP;
+END $$
+--
+DO $$
+DECLARE
+	num_tab int := 1;
+	num_id int := 1;
+BEGIN
+	WHILE (num_id <= 10) LOOP
+	
+	INSERT INTO numeros(id_numeros, num)
+	VALUES (num_id, num_tab);
+	num_id = num_id + 1;
+	num_tab = num_id;
+	
+	END LOOP;
+END $$
+--
+DO $$
+DECLARE
+	num_tab int := 1;
+	num_id int;
+BEGIN
+	FOR num_id IN 0..10 LOOP
+	
+	INSERT INTO numeros(id_numeros, num)
+	VALUES (num_id, num_tab);
+	num_id = num_id + 1;
+	num_tab = num_id;
+	
+	END LOOP;
+END $$
+
+SELECT num AS Numero FROM numeros;
+
+-- Utilize uma rotina de repetição que percorra uma tabela chamada “produtos” e acrescente um desconto de 10% no preço de todos os produtos até que o preço seja inferior a R$50,00.
+
+CREATE TABLE produtos (
+    id_produtos serial PRIMARY KEY,
+    valor FLOAT NOT NULL,
+    desconto FLOAT NOT NULL
+);
+
+drop table produtos;
+
+INSERT INTO produtos (valor, desconto) VALUES
+    (49.00, 80.00),
+    (50.00, 5.00),
+    (75.00, 7.50),
+    (120.00, 12.00),
+    (60.00, 6.00);
+	
+DO $$
+DECLARE
+	prod_id int := 1;
+	vlr float;
+	descon float := 10.00;
+BEGIN
+	LOOP
+	vlr := (SELECT valor FROM produtos WHERE id_produtos = prod_id);
+		IF(vlr > 50.00) THEN
+			exit;
+		END IF;
+		
+		UPDATE produtos
+		SET desconto = descon
+		WHERE id_produtos = prod_id;
+		prod_id := prod_id +1;
+		
+	END LOOP;
+END $$
+
+SELECT * FROM produtos
+ORDER BY id_produtos;
