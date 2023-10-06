@@ -364,7 +364,7 @@ RETURNS TRIGGER AS $$
 DECLARE
 	compra_total INT;
     pontos_total INT;
-    v INT := 0;
+    v INT := 100;
 BEGIN
 	WHILE(New.valor > v) LOOP
 	UPDATE clientes
