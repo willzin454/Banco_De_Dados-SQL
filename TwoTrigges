@@ -70,11 +70,10 @@ DECLARE
     clinteId INT := 1;
     produtoId INT := 2;
 BEGIN
-	vlr := (SELECT valor FROM produto WHERE id_produto = produtoId);
-    vlr := vlr * qtd;
+	vlr := (SELECT valor FROM produto WHERE id_produto = produtoId) * qtd;
     
 	INSERT INTO compra(valor_total, qtd_itens, cliente_id, produto_id)
     VALUES 	(vlr, qtd, clinteId, produtoId);
 END $$;
 
-SELECT * FROM cliente;
+SELECT * FROM compra;
