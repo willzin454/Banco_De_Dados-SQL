@@ -1,0 +1,80 @@
+drop table compra;
+drop table produto;
+drop table cliente;
+
+CREATE TABLE cliente(
+	id_cliente SERIAL NOT NULL PRIMARY KEY,
+  	nome VARCHAR(255) NOT NULL,
+  	historico_compra VARCHAR(255) NULL
+);
+
+CREATE TABLE produto(
+	id_produto SERIAL NOT NULL PRIMARY KEY,
+  	nomeProd VARCHAR(255) NOT NULL,
+  	valor FLOAT NOT NULL
+);
+
+CREATE TABLE compra(
+	id_compra SERIAL NOT NULL PRIMARY KEY,
+  	valor_total FLOAT NOT NULL,
+  	qtd_itens INT NOT NULL,
+  	cliente_id INT NOT NULL REFERENCES cliente(id_cliente),
+    produto_id INT NOT NULL REFERENCES produto(id_produto)
+);
+
+CREATE OR REPLACE FUNCTION atualizarHistorico()
+RETURNS TRIGGER AS $$
+DECLARE
+    historicoCliente VARCHAR(255);
+    nomeProduto VARCHAR(255);
+BEGIN
+    historicoCliente := (SELECT historico_compra FROM cliente WHERE id_cliente = NEW.cliente_id);
+    
+    SELECT produto.nomeProd INTO nomeProduto
+    FROM produto
+    WHERE produto.id_produto = NEW.produto_id;
+    
+      IF (historicoCliente) IS NOT NULL THEN
+-- OU 	historicoCliente := historicoCliente || ', ' || nomeProduto;
+      	historicoCliente := historicoCliente || E'\r\n' || nomeProduto;
+      ELSE
+          historicoCliente := nomeProduto;
+    END IF;
+
+    UPDATE cliente
+    SET historico_compra = historicoCliente
+    WHERE id_cliente = NEW.cliente_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER inserirHistorico
+AFTER INSERT OR UPDATE
+ON compra
+FOR EACH ROW
+EXECUTE FUNCTION atualizarHistorico();
+
+INSERT INTO cliente(nome)
+VALUES 	('William'),
+		('Gabriel'),
+        ('Melissa');
+
+INSERT INTO produto(nomeProd, valor)
+VALUES 	('Final Fantasy 7', 350),
+		('Resident Evil 4 Remake', 250);
+
+DO $$
+DECLARE
+    vlr FLOAT;
+    qtd INT := 2;
+    clinteId INT := 1;
+    produtoId INT := 2;
+BEGIN
+	vlr := (SELECT valor FROM produto WHERE id_produto = produtoId);
+    vlr := vlr * qtd;
+    
+	INSERT INTO compra(valor_total, qtd_itens, cliente_id, produto_id)
+    VALUES 	(vlr, qtd, clinteId, produtoId);
+END $$;
+
+SELECT * FROM cliente;
