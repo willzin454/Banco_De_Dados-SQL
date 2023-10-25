@@ -11,6 +11,7 @@ CREATE TABLE cliente(
 CREATE TABLE produto(
 	id_produto SERIAL NOT NULL PRIMARY KEY,
   	nomeProd VARCHAR(255) NOT NULL,
+  	estoque INT NOT NULL,
   	valor FLOAT NOT NULL
 );
 
@@ -48,20 +49,37 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
+CREATE OR REPLACE FUNCTION atualizarEstoque()
+RETURNS TRIGGER AS $$
+BEGIN
+	UPDATE produto
+    SET estoque = estoque - NEW.qtd_itens
+    WHERE id_produto = NEW.produto_id;
+    
+	RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
 CREATE OR REPLACE TRIGGER inserirHistorico
 AFTER INSERT OR UPDATE
 ON compra
 FOR EACH ROW
 EXECUTE FUNCTION atualizarHistorico();
 
+CREATE OR REPLACE TRIGGER attHistorico
+AFTER INSERT OR UPDATE
+ON compra
+FOR EACH ROW
+EXECUTE FUNCTION atualizarEstoque()
+
 INSERT INTO cliente(nome)
 VALUES 	('William'),
 		('Gabriel'),
         ('Melissa');
 
-INSERT INTO produto(nomeProd, valor)
-VALUES 	('Final Fantasy 7', 350),
-		('Resident Evil 4 Remake', 250);
+INSERT INTO produto(nomeProd, estoque, valor)
+VALUES 	('Final Fantasy 7', 100, 350),
+		('Resident Evil 4 Remake', 50, 250);
 
 DO $$
 DECLARE
@@ -70,10 +88,12 @@ DECLARE
     clinteId INT := 1;
     produtoId INT := 2;
 BEGIN
-	vlr := (SELECT valor FROM produto WHERE id_produto = produtoId) * qtd;
+	vlr := (SELECT valor FROM produto WHERE id_produto = produtoId);
+    vlr := vlr * qtd;
     
 	INSERT INTO compra(valor_total, qtd_itens, cliente_id, produto_id)
     VALUES 	(vlr, qtd, clinteId, produtoId);
 END $$;
 
-SELECT * FROM compra;
+SELECT * FROM cliente;
+SELECT * FROM produto;
